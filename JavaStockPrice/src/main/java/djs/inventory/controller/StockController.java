@@ -1,6 +1,5 @@
 package djs.inventory.controller;
 
-import djs.inventory.connection.RabbitMQConnection;
 import djs.inventory.dto.StockDTO;
 import djs.inventory.service.RabbitMQService;
 import org.springframework.http.HttpStatus;
@@ -9,6 +8,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import static djs.inventory.constant.RabbitMQConstant.STOCK_QUEUE;
 
 @RestController
 @RequestMapping("stock")
@@ -22,7 +23,7 @@ public class StockController {
 
     @PutMapping
     private ResponseEntity<StockDTO> updateStock(@RequestBody StockDTO stockDTO) {
-        this.rabbitMQService.sendMessage(RabbitMQConnection.STOCK_QUEUE, stockDTO);
+        this.rabbitMQService.sendMessage(STOCK_QUEUE, stockDTO);
         return new ResponseEntity<>(stockDTO, HttpStatus.OK);
     }
 }

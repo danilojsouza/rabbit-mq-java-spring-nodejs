@@ -7,11 +7,11 @@ import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.stereotype.Component;
 
+import static djs.inventory.constant.RabbitMQConstant.STOCK_QUEUE;
+import static djs.inventory.constant.RabbitMQConstant.PRICE_QUEUE;
+
 @Component
 public class RabbitMQConnection {
-
-    public static final String STOCK_QUEUE = "STOCK";
-    public static final String PRICE_QUEUE = "PRICE";
 
     private static final String EXCHANGE_NAME = "amq.direct";
 
@@ -43,11 +43,11 @@ public class RabbitMQConnection {
         Binding binding = this.getNewBinding(stockQueue, exchange);
 
         this.amqpAdmin.declareExchange(exchange);
-        this.amqpAdmin.declareBinding(binding);
 
         this.amqpAdmin.declareQueue(stockQueue);
         this.amqpAdmin.declareQueue(priceQueue);
 
+        this.amqpAdmin.declareBinding(binding);
     }
 
 }
