@@ -1,5 +1,6 @@
+# RabbitMQ Inventory
 data/*
-JavaStockPrice/target
+*/target
 
 # Intellij
 .idea
