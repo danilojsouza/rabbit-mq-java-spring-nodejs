@@ -44,7 +44,8 @@ $$\text{Producer (Java)} \xrightarrow{\text{JSON Message}} \text{RabbitMQ} \begi
 
 #### 1\. Start the RabbitMQ Broker
 
-Starts RabbitMQ in Docker, with the management UI exposed on port `15673`.
+- Add a user and password in docker-compose file.
+- Starts RabbitMQ in Docker, with the management UI exposed on port `15673`.
 
 ```bash
 # From the project root directory
@@ -56,10 +57,14 @@ docker-compose up -d
 Running `mvn clean install` ensures the shared `LibRabbitMQ` module (containing the DTOs) is available to the rest of the projects.
 
 ```bash
-# 1. Compile all modules
+# 1. Set environment variables: 
+${RABBITMQ_ADMIN_USER}
+${RABBITMQ_ADMIN_PASSWORD}
+
+# 2. Compile all modules
 mvn clean install
 
-# 2. Run the main application (Producer & Java Consumer logic)
+# 3. Run the main application (Producer & Java Consumer logic)
 mvn spring-boot:run -pl JavaStockPrice
 ```
 
