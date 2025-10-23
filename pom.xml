@@ -42,10 +42,16 @@
             </dependency>
 
             <dependency>
-                <groupId>com.rabbitmq</groupId>
-                <artifactId>amqp-client</artifactId>
-                <version>5.18.0</version>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>1.5.19</version> <!-- to solve vulnerability CVE-2025-11226 -->
             </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.5.19</version> <!-- to solve vulnerability CVE-2025-11226 -->
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
