@@ -66,6 +66,8 @@ mvn clean install
 
 # 3. Run the main application (Producer & Java Consumer logic)
 mvn spring-boot:run -pl JavaStockPrice
+# and
+mvn spring-boot:run -pl JavaConsumer
 ```
 
 #### 3\. Configure and Run the Node.js Consumer
