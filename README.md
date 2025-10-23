@@ -1,105 +1,96 @@
-## 📦 Inventory Stock Price System
+## 📦 Inventory Stock Price System: Multi-Language Messaging 🚀
 
-A comprehensive multi-module project demonstrating real-time communication and microservices architecture using **RabbitMQ** to connect applications built in different languages (**Java/Spring** and **Node.js**).
+A multi-module project showcasing asynchronous communication and microservices architecture by using **RabbitMQ** to integrate applications built in different languages: **Java/Spring Boot** and **Node.js**.
 
-This project showcases expertise in asynchronous messaging, multi-module Maven structure, Docker containerization, and the Spring Boot ecosystem.
+This system simulates an inventory and price update pipeline, highlighting resilience and cross-language interoperability.
 
-### ⚙️ Technologies & Stack
+-----
+
+### ⚙️ Key Technologies and Configurations
 
 | Category | Technology | Version | Notes |
 | :--- | :--- | :--- | :--- |
-| **Backend (Core)** | Java | 21 (LTS) | Modern Java features (e.g., Records) are used. |
-| **Framework** | Spring Boot | 3.5.6 | Used for rapid development of Producer & Java Consumer. |
+| **Backend (Core)** | Java | 21 (LTS) | Uses **Records** for DTOs and immutability. |
+| **Framework** | Spring Boot | 3.5.6 | Simplifies AMQP configuration and REST APIs. |
 | **Messaging Broker** | RabbitMQ | 3-Management | Central messaging backbone. |
-| **Consumer (Secondary)** | Node.js | Latest | Demonstrating cross-language communication. |
-| **Build Tool** | Maven | 3.9.11 | Manages multi-module structure (`pom` packaging). |
-| **Containerization** | Docker / Docker Compose | 28.5.1 | For easy local setup of the RabbitMQ service. |
+| **Secondary Consumer** | Node.js | Latest | Demonstrates cross-language communication. |
+| **Serialization** | **Jackson (JSON)** | — | Standard used for robust, interoperable communication. |
+| **Build Tool** | Maven | 3.9.11 | Manages the multi-module structure. |
+| **Containerization** | Docker Compose | — | Quick RabbitMQ setup. |
 
----
+-----
 
-### 🏛️ Architecture Overview
+### 🏛️ Architecture & Resilience Highlights
 
-The system is designed around a single RabbitMQ Exchange (`amq.direct`) acting as the central hub for inventory updates.
+The system uses a message pipeline where the Java Producer sends raw Java objects (`StockDTO`, `PriceDTO`) which are serialized to **JSON** and consumed by diverse services.
 
-| Component | Language/Framework | Role |
-| :--- | :--- | :--- |
-| **Producer** | Java / Spring Boot (`JavaStockPrice`) | Sends `StockDTO` and `PriceDTO` messages to the Exchange, indicating inventory changes. |
-| **Consumer 1 (Price Update)** | Java / Spring Boot (`JavaConsumer`) | Receives messages, simulates complex pricing logic, and updates the price. |
-| **Consumer 2 ()** | Node.js | To be defined. |
-| **Messaging** | RabbitMQ | Connects the Producer and the two diverse Consumers. |
+1.  **Standardized JSON Serialization:** The `RabbitTemplate` and `Jackson2JsonMessageConverter` are configured to serialize Java objects into JSON, ensuring the Node.js Consumer can deserialize the message effortlessly.
+2.  **Contract Modules (`LibRabbitMQ`):** The data transfer objects (e.g., **`StockDTO`**) are centralized in a library module to eliminate code duplication between Java Producer and Consumers.
+3.  **DLQ (Dead Letter Queue) Mechanism:** Queues are configured with a Dead Letter Exchange to manage permanent processing failures (e.g., rejecting negative stock updates), routing the message to a quarantine queue (`.dlq`).
+4.  **Node.js Consumer:** Demonstrates the ability of RabbitMQ to connect completely different languages seamlessly.
 
-$$\text{Producer (Java)} \xrightarrow{\text{Message}} \text{RabbitMQ Exchange} \begin{cases} \longrightarrow \text{Consumer 1 (Java)} \\ \longrightarrow \text{Consumer 2 (Node.js)} \end{cases}$$
+$$\text{Producer (Java)} \xrightarrow{\text{JSON Message}} \text{RabbitMQ} \begin{cases} \longrightarrow \text{Consumer (Java)} \text{ w/ DLQ} \\ \longrightarrow \text{Consumer (Node.js)} \end{cases}$$
 
----
+-----
 
 ### 🚀 Getting Started
 
-Follow these steps to get the project running locally.
-
 #### Prerequisites
 
-* Java Development Kit (JDK 21 or higher)
-* Apache Maven (3.9.11 or higher)
+* Java Development Kit (JDK 21+)
+* Apache Maven (3.9+)
 * Docker and Docker Compose
+* Node.js and npm
 
-#### 1. Start the RabbitMQ Broker
+#### 1\. Start the RabbitMQ Broker
 
-The project uses Docker Compose to manage the RabbitMQ service, ensuring a consistent environment and exposing the necessary ports (5673 for AMQP and 15673 for the Management UI).
+Starts RabbitMQ in Docker, with the management UI exposed on port `15673`.
 
 ```bash
 # From the project root directory
 docker-compose up -d
-````
-
-> **Note:** The broker is configured to run on `localhost:5673` to prevent conflicts with other services using the default 5672 port.
-
-#### 2\. Build the Java Modules
-
-Navigate to the project root and perform a clean installation to build the core modules (`LibRabbitMQ` and `JavaStockPrice`) and install them in your local Maven repository.
-
-```bash
-mvn clean install
 ```
 
-#### 3\. Run the Spring Boot Application (Producer & Java Consumer)
+#### 2\. Build and Run the Java Applications (Producer & Consumer)
 
-The main application handles both the message production and the Java-based consumption logic. Use the `-pl` flag to execute the specific module containing the application:
+Running `mvn clean install` ensures the shared `LibRabbitMQ` module (containing the DTOs) is available to the rest of the projects.
 
 ```bash
+# 1. Compile all modules
+mvn clean install
+
+# 2. Run the main application (Producer & Java Consumer logic)
 mvn spring-boot:run -pl JavaStockPrice
 ```
 
-#### 4\. Run the Node.js Consumer
+#### 3\. Configure and Run the Node.js Consumer
 
-(Assuming you have a separate directory for the Node.js consumer).
+The Node.js Consumer requires credentials setup and the ES module mode to be enabled.
 
 ```bash
-# Navigate to your Node.js consumer directory
-cd path/to/nodejs-consumer
-
-# Install dependencies and run
+# 1. Navigate and install dependencies
+cd nodejs-consumer
 npm install
-node index.js
+
+# 2. Configure the Node.js project as an ES module (crucial for 'import')
+# Ensure package.json contains: "type": "module"
+
+# 3. Create the credentials file (replace YOUR_USER/PASSWORD)
+echo 'export const RABBITMQ_ADMIN_USER = "YOUR_USER";
+export const RABBITMQ_ADMIN_PASSWORD = "YOUR_PASSWORD";' > djs/inventory/rabbitmq-credentials.js
+
+# 4. Run the Node.js Consumer
+node djs/inventory/consumer.js
 ```
 
 -----
 
-### 🧱 Project Structure (Maven Multi-Module)
+### 🧱 Project Structure
 
-The project leverages Maven's multi-module capability (`pom` packaging in the root) for clear separation of concerns:
-
-| Module | Packaging | Description |
+| Module | Type | Description |
 | :--- | :--- | :--- |
-| `parent` (Root) | `pom` | Aggregator and parent POM. Manages common dependencies and versions. |
-| `LibRabbitMQ` | `jar` | Shared library module. Contains core DTOs and constants. |
-| `JavaStockPrice` | `jar` | The main Spring Boot application. Contains the Producer, Controllers, and the primary application entry point. (API) |
-
-### ✅ Key Demonstrations
-
-  * **Robust DTO Handling:** Use of Java **Records** (Java 21+) for immutable and clean data transfer, solving common serialization errors (e.g., `InvalidDefinitionException`).
-  * **Asynchronous Communication:** Proper configuration and use of Spring AMQP to define Exchanges, Queues, and Bindings.
-  * **Cross-Language Integration:** Successful messaging between Java (Producer) and Node.js (Consumer).
-  * **Maven Efficiency:** Using commands like `mvn clean install` and `mvn spring-boot:run -pl <module>` for optimal multi-module workflow.
-  * **Clean Coding:** Employing SLF4J logging instead of `System.out.println`.
-
-<!-- end list -->
+| `parent` (Root) | `pom` | Manages dependencies and versions for all sub-modules. |
+| `LibRabbitMQ` | `jar` | Shared library containing **DTOs** (`StockDTO`, `PriceDTO`), **Constants**, and **AMQP Configuration** (`RabbitMQConfig`). |
+| `JavaStockPrice` | `jar` | Main Spring Boot application (Message Producer and REST API). |
+| `JavaConsumer` | `jar` | Spring Boot application simulating stock/price logic and housing the **DLQ mechanism**. |
+| `nodejs-consumer` | Directory | Node.js application responsible for consuming JSON messages. |

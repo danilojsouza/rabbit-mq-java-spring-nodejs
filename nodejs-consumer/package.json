@@ -1,0 +1,30 @@
+{
+  "name": "nodejs-consumer",
+  "version": "1.0.0",
+  "description": "A rabbit-mq consumer",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danilojsouza/rabbit-mq-java-spring-nodejs.git"
+  },
+  "keywords": [
+    "node",
+    "consumer"
+  ],
+  "author": "danilo.souza",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danilojsouza/rabbit-mq-java-spring-nodejs/issues"
+  },
+  "homepage": "https://github.com/danilojsouza/rabbit-mq-java-spring-nodejs#readme",
+  "dependencies": {
+    "amqplib": "^0.10.9"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.10.7"
+  }
+}
